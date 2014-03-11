@@ -2,7 +2,7 @@ name: MineralLimiter
 version: 0.0.1
 description: Yet another useless Minecraft Craftbukkit plugin.
 author: Saren
-website: https://gitlab.wtako.net/Saren/MineralLimiter
+website: https://github.com/Saren-Arterius/MineralLimiter
  
 main: net.wtako.MineralLimiter.MineralLimiter
 database: true
