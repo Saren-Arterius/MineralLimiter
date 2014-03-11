@@ -14,6 +14,7 @@ public class ArgReload {
         }
         Main.getInstance().getServer().getPluginManager().disablePlugin(Main.getInstance());
         Main.getInstance().getServer().getPluginManager().enablePlugin(Main.getInstance());
+        Main.getInstance().reloadConfig();
         sender.sendMessage(Lang.PLUGIN_RELOADED.toString());
     }
 

@@ -39,10 +39,10 @@ public class Database {
     }
 
     public void purgeData() throws SQLException {
-        Main.log.info(Lang.TITLE.toString() + "Purging data...");
-        final PreparedStatement delStmt = conn.prepareStatement("DELETE FROM `mineral_records` WHERE timestamp < ?");
         final int oldTime = (int) (System.currentTimeMillis() / 1000L)
-                + Main.getInstance().getConfig().getInt("variable.TimeLimit");
+                - Main.getInstance().getConfig().getInt("variable.TimeLimit");
+        Main.log.info(Lang.TITLE.toString() + MessageFormat.format("Purging data older than {0}...", oldTime));
+        final PreparedStatement delStmt = conn.prepareStatement("DELETE FROM `mineral_records` WHERE timestamp < ?");
         delStmt.setInt(1, oldTime);
         delStmt.execute();
         delStmt.close();

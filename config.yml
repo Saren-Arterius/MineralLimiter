@@ -1,9 +1,11 @@
 variable:
     ReverseAffectedWorlds: No
     AffectedWorlds:
+    # Case sensitive
     - world
     - world_nether
-    AffectedBlocks:
+    AffectedBlockTypes:
+    # MUST BE ALL IN CAPS
     - DIAMOND_ORE
     - EMERALD_ORE
     - GOLD_ORE
@@ -12,14 +14,18 @@ variable:
     - REDSTONE_ORE
     - COAL_ORE
     TimeLimit: 86400
-    BlocksLimitPerTime:
+    BlockTypesLimitPerPeriod:
+        # Set value to 0 to disable allowance
         Default: 16
         DIAMOND_ORE: 3
         EMERALD_ORE: 3
         GOLD_ORE: 5
         IRON_ORE: 10
+        COAL_ORE: 32
     NoDropsIfOverLimit: Yes
+    # Overrides NoDropsIfOverLimit
     CancelEventIfOverLimit: No
+    IgnoreCreative: Yes
     
 system:
     PluginVersion: 0.0.1

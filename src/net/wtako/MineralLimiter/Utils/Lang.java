@@ -13,9 +13,16 @@ public enum Lang {
     TITLE("title", "[MineralLimiter]"),
     DO_NOT_MINE_IN_THIS_WORLD(
             "do-not-mine-in-this-world",
-            "Please do not mine in this world. Please go resource world instead."),
-    YOU_MINED_TOO_MUCH("you-mined-too-much", "You mined too much {0} within {1} seconds. ({2}/{3})"),
+            "&ePlease do not mine in this world. Please go resource world instead."),
+    YOU_MINED_TOO_MUCH(
+            "you-mined-too-much",
+            "&cYou have reached the allowance of mining {0} within {1} seconds. ({2}/{3})"),
+    THERE_IS_NO_MORE_DROPS("there-is-no-more-drops", "&eThere is no more drops of {0} for you."),
+    DO_NOT_PLACE_ORES(
+            "do-not-place-ores",
+            "&eTo avoid confliction, please do not place ores. Exceptions will expire after server restart."),
     PLUGIN_RELOADED("plugin-reloaded", "&aPlugin reloaded."),
+    DB_EXCEPTION("db-exception", "&4A database error occured! Please contact server administrators."),
     NO_PERMISSION_COMMAND("no-permission-command", "&cYou are not allowed to use this command.");
 
     private String                   path;

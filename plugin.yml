@@ -10,8 +10,8 @@ database: true
 commands:
     mlimit:
         description: Basic command.
-        usage: Type /<command> help to get help.
-        permission: MineralLimiter.admin
+        usage: Type /<command> to view stats.
+        permission: MineralLimiter.ViewStats
         permission-message: You are not permitted to use this plugin.
 
 permissions:
@@ -21,10 +21,13 @@ permissions:
     MineralLimiter.admin:
         description: Gives access to all MineralLimiter administrative commands.
         children:
-            MineralLimiter.disableOnPlayer: true
+            MineralLimiter.ignore: true
             MineralLimiter.reload: true
         default: op
-    MineralLimiter.disableOnPlayer:
+    MineralLimiter.ViewStats:
+        description: Players with this permission can view their mine statistics.
+        default: no
+    MineralLimiter.ignore:
         description: Players with this permission will not be affected by this plugin.
         default: op
     MineralLimiter.reload:

@@ -31,7 +31,9 @@ public final class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerBlockBreakListener(), this);
         loadLang();
         try {
-            new Database().check();
+            new Database();
+            Database.getInstance().check();
+            Database.getInstance().purgeData();
         } catch (final SQLException e) {
             Main.log.severe("When you see this, that means this plugin is screwed.");
             e.printStackTrace();
