@@ -20,7 +20,7 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-public class PlayerBlockBreakListener implements Listener {
+public class BlockActionsListener implements Listener {
 
     private static ArrayList<Block> playerPlacedOres = new ArrayList<Block>();
 
@@ -44,8 +44,8 @@ public class PlayerBlockBreakListener implements Listener {
         if (player.getGameMode() == GameMode.CREATIVE && IgnoreCreative) {
             return;
         }
-        if (PlayerBlockBreakListener.playerPlacedOres.contains(event.getBlock())) {
-            PlayerBlockBreakListener.playerPlacedOres.remove(event.getBlock());
+        if (BlockActionsListener.playerPlacedOres.contains(event.getBlock())) {
+            BlockActionsListener.playerPlacedOres.remove(event.getBlock());
             return;
         }
         try {
@@ -78,7 +78,7 @@ public class PlayerBlockBreakListener implements Listener {
         final String blockTypeString = event.getBlock().getType().toString();
         if (AffectedBlockTypes.contains(blockTypeString)) {
             player.sendMessage(Lang.DO_NOT_PLACE_ORES.toString());
-            PlayerBlockBreakListener.playerPlacedOres.add(event.getBlock());
+            BlockActionsListener.playerPlacedOres.add(event.getBlock());
         }
     }
 

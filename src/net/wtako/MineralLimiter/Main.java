@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.wtako.MineralLimiter.Commands.CommandMlimit;
-import net.wtako.MineralLimiter.EventHandlers.PlayerBlockBreakListener;
+import net.wtako.MineralLimiter.EventHandlers.BlockActionsListener;
 import net.wtako.MineralLimiter.Methods.Database;
 import net.wtako.MineralLimiter.Utils.Lang;
 
@@ -28,7 +28,7 @@ public final class Main extends JavaPlugin {
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
         getCommand("mlimit").setExecutor(new CommandMlimit());
-        getServer().getPluginManager().registerEvents(new PlayerBlockBreakListener(), this);
+        getServer().getPluginManager().registerEvents(new BlockActionsListener(), this);
         loadLang();
         try {
             new Database();
