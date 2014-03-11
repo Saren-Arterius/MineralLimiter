@@ -1,7 +1,7 @@
 MineralLimiter
 ========
 
-A Craftbukkit plugin that prevents players from mining too much minerals in spefific worlds.
+A Craftbukkit plugin that prevents players from mining too much minerals in specific worlds.
 
 Usage
 ========
