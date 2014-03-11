@@ -7,7 +7,7 @@ Usage
 ========
 
 * Shoo your players away to mining worlds.
-* Limiting how much they can mine per period.
+* Limiting how much they can mine within a time period.
 
 
 Commands
