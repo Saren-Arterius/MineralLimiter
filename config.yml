@@ -1,0 +1,25 @@
+variable:
+    ReverseAffectedWorlds: No
+    AffectedWorlds:
+    - world
+    - world_nether
+    AffectedBlocks:
+    - DIAMOND_ORE
+    - EMERALD_ORE
+    - GOLD_ORE
+    - IRON_ORE
+    - LAPIS_ORE
+    - REDSTONE_ORE
+    - COAL_ORE
+    TimeLimit: 86400
+    BlocksLimitPerTime:
+        Default: 16
+        DIAMOND_ORE: 3
+        EMERALD_ORE: 3
+        GOLD_ORE: 5
+        IRON_ORE: 10
+    NoDropsIfOverLimit: Yes
+    CancelEventIfOverLimit: No
+    
+system:
+    PluginVersion: 0.0.1
