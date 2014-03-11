@@ -11,11 +11,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public enum Lang {
 
     TITLE("title", "[MineralLimiter]"),
-    DO_NOT_MINE_IN_THIS_WORLD("do-not-mine-in-this-world", "Please do not mine in this world. Please go resource world instead."),
+    DO_NOT_MINE_IN_THIS_WORLD(
+            "do-not-mine-in-this-world",
+            "Please do not mine in this world. Please go resource world instead."),
     YOU_MINED_TOO_MUCH("you-mined-too-much", "You mined too much {0} within {1} seconds. ({2}/{3})"),
     PLUGIN_RELOADED("plugin-reloaded", "&aPlugin reloaded."),
     NO_PERMISSION_COMMAND("no-permission-command", "&cYou are not allowed to use this command.");
-    
+
     private String                   path;
     private String                   def;
     private static YamlConfiguration LANG;

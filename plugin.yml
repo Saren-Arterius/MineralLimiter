@@ -4,7 +4,7 @@ description: Yet another useless Minecraft Craftbukkit plugin.
 author: Saren
 website: https://github.com/Saren-Arterius/MineralLimiter
  
-main: net.wtako.MineralLimiter.MineralLimiter
+main: net.wtako.MineralLimiter.Main
 database: true
 
 commands:
