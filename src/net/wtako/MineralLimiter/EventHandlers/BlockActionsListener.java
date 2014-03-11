@@ -29,15 +29,24 @@ public class BlockActionsListener implements Listener {
         final List<String> AffectedWorlds = Main.getInstance().getConfig().getStringList("variable.AffectedWorlds");
         final List<String> AffectedBlockTypes = Main.getInstance().getConfig()
                 .getStringList("variable.AffectedBlockTypes");
+        final boolean ReverseAffectedWorlds = Main.getInstance().getConfig()
+                .getBoolean("variable.ReverseAffectedWorlds");
         final boolean NoDropsIfOverLimit = Main.getInstance().getConfig().getBoolean("variable.NoDropsIfOverLimit");
         final boolean CancelEventIfOverLimit = Main.getInstance().getConfig()
                 .getBoolean("variable.CancelEventIfOverLimit");
         final boolean IgnoreCreative = Main.getInstance().getConfig().getBoolean("variable.IgnoreCreative");
         final Player player = event.getPlayer();
 
-        if (!AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
-            return;
+        if (ReverseAffectedWorlds) {
+            if (AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
+                return;
+            }
+        } else {
+            if (!AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
+                return;
+            }
         }
+
         if (player.hasPermission("MineralLimiter.ignore")) {
             return;
         }
@@ -68,12 +77,20 @@ public class BlockActionsListener implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
+        final boolean ReverseAffectedWorlds = Main.getInstance().getConfig()
+                .getBoolean("variable.ReverseAffectedWorlds");
         final List<String> AffectedWorlds = Main.getInstance().getConfig().getStringList("variable.AffectedWorlds");
         final List<String> AffectedBlockTypes = Main.getInstance().getConfig()
                 .getStringList("variable.AffectedBlockTypes");
         final Player player = event.getPlayer();
-        if (!AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
-            return;
+        if (ReverseAffectedWorlds) {
+            if (AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
+                return;
+            }
+        } else {
+            if (!AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
+                return;
+            }
         }
         final String blockTypeString = event.getBlock().getType().toString();
         if (AffectedBlockTypes.contains(blockTypeString)) {
@@ -84,8 +101,8 @@ public class BlockActionsListener implements Listener {
 
     @EventHandler
     public void onPistonEvent(BlockPistonExtendEvent event) {
-        for (Block block: event.getBlocks()) {
-            if (playerPlacedOres.contains(block)) {
+        for (final Block block: event.getBlocks()) {
+            if (BlockActionsListener.playerPlacedOres.contains(block)) {
                 event.setCancelled(true);
             }
         }
@@ -93,7 +110,7 @@ public class BlockActionsListener implements Listener {
 
     @EventHandler
     public void onPistonEvent(BlockPistonRetractEvent event) {
-        if (playerPlacedOres.contains(event.getRetractLocation().getBlock())) {
+        if (BlockActionsListener.playerPlacedOres.contains(event.getRetractLocation().getBlock())) {
             event.setCancelled(true);
         }
     }
