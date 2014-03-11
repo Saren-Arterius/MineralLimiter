@@ -1,6 +1,6 @@
 name: MineralLimiter
 version: 0.0.1
-description: Yet another useless Minecraft Craftbukkit plugin.
+description: Prevents players from mining too much minerals in spefific worlds.
 author: Saren
 website: https://github.com/Saren-Arterius/MineralLimiter
  
