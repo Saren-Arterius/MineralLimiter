@@ -1,5 +1,5 @@
 name: MineralLimiter
-version: 0.0.1
+version: 0.0.1b
 description: Prevents players from mining too much minerals in specific worlds.
 author: Saren
 website: https://github.com/Saren-Arterius/MineralLimiter
