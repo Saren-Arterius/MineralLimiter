@@ -11,23 +11,15 @@ import org.bukkit.entity.Player;
 
 public class MineralLimiterDatabase extends Database {
 
-    private final Player player;
-    private final String blockType;
-    private final int    currentTime;
-    private final int    TimeLimit;
-    private final int    oldTime;
-
-    public MineralLimiterDatabase(Player player, String blockType) throws SQLException {
+    public MineralLimiterDatabase() throws SQLException {
         super();
-        this.player = player;
-        this.blockType = blockType;
-        currentTime = (int) (System.currentTimeMillis() / 1000L);
-        TimeLimit = Main.getInstance().getConfig().getInt("variable.TimeLimit");
-        oldTime = currentTime - TimeLimit;
     }
 
-    public boolean canMineThisBlock() throws SQLException {
-        final PreparedStatement selStmt = conn
+    public static boolean canMineThisBlock(Player player, String blockType) throws SQLException {
+        int currentTime = (int) (System.currentTimeMillis() / 1000L);
+        int TimeLimit = Main.getInstance().getConfig().getInt("variable.TimeLimit");
+        int oldTime = currentTime - TimeLimit;
+        final PreparedStatement selStmt = Database.getInstance().conn
                 .prepareStatement("SELECT count(*) FROM `mineral_records` WHERE player = ? AND mineral_type = ? AND timestamp > ?");
         selStmt.setString(1, player.getName().toLowerCase());
         selStmt.setString(2, blockType);
@@ -44,15 +36,14 @@ public class MineralLimiterDatabase extends Database {
             player.sendMessage(MessageFormat.format(Lang.YOU_MINED_TOO_MUCH.toString(), blockType, TimeLimit, count,
                     limit));
             return false;
-        } else {
-            player.sendMessage(Lang.DO_NOT_MINE_IN_THIS_WORLD.toString());
-            insertRecord();
-            return true;
         }
+        player.sendMessage(Lang.DO_NOT_MINE_IN_THIS_WORLD.toString());
+        insertRecord(player, blockType, currentTime);
+        return true;
     }
 
-    private void insertRecord() throws SQLException {
-        final PreparedStatement insStmt = conn
+    private static void insertRecord(Player player, String blockType, int currentTime) throws SQLException {
+        final PreparedStatement insStmt = Database.getInstance().conn
                 .prepareStatement("INSERT INTO `mineral_records` (player, mineral_type, timestamp) VALUES (?, ?, ?)");
         insStmt.setString(1, player.getName().toLowerCase());
         insStmt.setString(2, blockType);

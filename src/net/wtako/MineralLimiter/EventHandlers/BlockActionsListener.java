@@ -22,27 +22,30 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public class BlockActionsListener implements Listener {
 
-    private static ArrayList<Block> playerPlacedOres = new ArrayList<Block>();
+    private static ArrayList<Block> playerPlacedOres       = new ArrayList<Block>();
+    private static List<String>     AffectedWorlds         = Main.getInstance().getConfig()
+                                                                   .getStringList("variable.AffectedWorlds");
+    private static List<String>     AffectedBlockTypes     = Main.getInstance().getConfig()
+                                                                   .getStringList("variable.AffectedBlockTypes");
+    private static boolean          ReverseAffectedWorlds  = Main.getInstance().getConfig()
+                                                                   .getBoolean("variable.ReverseAffectedWorlds");
+    private static boolean          NoDropsIfOverLimit     = Main.getInstance().getConfig()
+                                                                   .getBoolean("variable.NoDropsIfOverLimit");
+    private static boolean          CancelEventIfOverLimit = Main.getInstance().getConfig()
+                                                                   .getBoolean("variable.CancelEventIfOverLimit");
+    private static boolean          IgnoreCreative         = Main.getInstance().getConfig()
+                                                                   .getBoolean("variable.IgnoreCreative");
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        final List<String> AffectedWorlds = Main.getInstance().getConfig().getStringList("variable.AffectedWorlds");
-        final List<String> AffectedBlockTypes = Main.getInstance().getConfig()
-                .getStringList("variable.AffectedBlockTypes");
-        final boolean ReverseAffectedWorlds = Main.getInstance().getConfig()
-                .getBoolean("variable.ReverseAffectedWorlds");
-        final boolean NoDropsIfOverLimit = Main.getInstance().getConfig().getBoolean("variable.NoDropsIfOverLimit");
-        final boolean CancelEventIfOverLimit = Main.getInstance().getConfig()
-                .getBoolean("variable.CancelEventIfOverLimit");
-        final boolean IgnoreCreative = Main.getInstance().getConfig().getBoolean("variable.IgnoreCreative");
         final Player player = event.getPlayer();
 
-        if (ReverseAffectedWorlds) {
-            if (AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
+        if (BlockActionsListener.ReverseAffectedWorlds) {
+            if (BlockActionsListener.AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
                 return;
             }
         } else {
-            if (!AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
+            if (!BlockActionsListener.AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
                 return;
             }
         }
@@ -50,7 +53,7 @@ public class BlockActionsListener implements Listener {
         if (player.hasPermission("MineralLimiter.ignore")) {
             return;
         }
-        if (player.getGameMode() == GameMode.CREATIVE && IgnoreCreative) {
+        if (player.getGameMode() == GameMode.CREATIVE && BlockActionsListener.IgnoreCreative) {
             return;
         }
         if (BlockActionsListener.playerPlacedOres.contains(event.getBlock())) {
@@ -59,13 +62,12 @@ public class BlockActionsListener implements Listener {
         }
         try {
             final String blockTypeString = event.getBlock().getType().toString();
-            if (AffectedBlockTypes.contains(blockTypeString)
-                    && !(new MineralLimiterDatabase(player, blockTypeString).canMineThisBlock())) {
-                if (CancelEventIfOverLimit) {
+            if (BlockActionsListener.AffectedBlockTypes.contains(blockTypeString)
+                    && !(MineralLimiterDatabase.canMineThisBlock(player, blockTypeString))) {
+                if (BlockActionsListener.CancelEventIfOverLimit) {
                     event.setCancelled(true);
-                } else if (NoDropsIfOverLimit) {
+                } else if (BlockActionsListener.NoDropsIfOverLimit) {
                     event.getBlock().setType(Material.AIR);
-                    event.setExpToDrop(0);
                     player.sendMessage(MessageFormat.format(Lang.THERE_IS_NO_MORE_DROPS.toString(), blockTypeString));
                 }
             }
