@@ -63,9 +63,12 @@ public class BlockActionsListener implements Listener {
         }
         try {
             final String blockTypeString = event.getBlock().getType().toString();
-            if (isListContainsStringIgnoreCase(BlockActionsListener.AffectedBlockTypes, blockTypeString)
-                    && MineralLimiterDatabase.canMineThisBlock(player, blockTypeString)) {
-                // Restricted block, in allowance
+            // Restricted block
+            if (!isListContainsStringIgnoreCase(BlockActionsListener.AffectedBlockTypes, blockTypeString)) {
+                return;
+            }
+            // in allowance
+            if (MineralLimiterDatabase.canMineThisBlock(player, blockTypeString)) {
                 final BukkitRunnable timer = new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -79,9 +82,7 @@ public class BlockActionsListener implements Listener {
                     }
                 };
                 timer.runTaskAsynchronously(Main.getInstance());
-            } else if (isListContainsStringIgnoreCase(BlockActionsListener.AffectedBlockTypes, blockTypeString)
-                    && !MineralLimiterDatabase.canMineThisBlock(player, blockTypeString)) {
-                // Restricted block, no more allowance
+            } else {
                 if (BlockActionsListener.CancelEventIfOverLimit) {
                     player.sendMessage(Lang.DO_NOT_MINE_IN_THIS_WORLD.toString());
                     event.setCancelled(true);
