@@ -1,0 +1,34 @@
+name: ${name}
+artifactId: ${artifactId}
+version: ${version}
+description: ${description}
+author: ${author}
+website: ${url}
+ 
+main: ${groupId}.${artifactId}.${mainClass}
+mainCommand: ${mainCommand}
+database: true
+
+commands:
+    ${mainCommand}:
+        description: Basic command.
+        usage: Type /<command> to use this plugin.
+        permission: ${artifactId}.admin
+        permission-message: You are not permitted to use this plugin.
+
+permissions:
+    ${artifactId}.*:
+        description: Gives access to all ${artifactId} commands.
+        default: op
+    ${artifactId}.admin:
+        description: Gives access to all ${artifactId} administrative commands.
+        children:
+            ${artifactId}.ignore: true
+            ${artifactId}.reload: true
+        default: op
+    ${artifactId}.ignore:
+        description: Players with this permission will not be affected by this plugin.
+        default: op
+    ${artifactId}.reload:
+        description: Reloads the plugin.
+        default: op

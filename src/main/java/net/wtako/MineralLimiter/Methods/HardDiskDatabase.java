@@ -1,5 +1,6 @@
 package net.wtako.MineralLimiter.Methods;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,21 +9,25 @@ import java.sql.Statement;
 import java.text.MessageFormat;
 
 import net.wtako.MineralLimiter.Main;
+import net.wtako.MineralLimiter.Utils.FileTool;
 import net.wtako.MineralLimiter.Utils.Lang;
 
-public class Database {
+public class HardDiskDatabase {
 
-    private static Database instance;
-    public Connection       conn;
+    private final String            path;
+    private static HardDiskDatabase instance;
+    private Connection              conn;
 
-    public Database() throws SQLException {
-        Database.instance = this;
-        final String path = MessageFormat.format("jdbc:sqlite:{0}/{1}", Main.getInstance().getDataFolder()
-                .getAbsolutePath(), "MineralLimiter.db");
+    public HardDiskDatabase() throws SQLException {
+        HardDiskDatabase.instance = this;
+        path = MessageFormat.format("jdbc:sqlite:{0}/{1}", Main.getInstance().getDataFolder().getAbsolutePath(), Main
+                .getInstance().getName() + ".db");
         conn = DriverManager.getConnection(path);
+        check(true);
+        purgeData();
     }
 
-    private void addConfig(String config, String value) throws SQLException {
+    public void addConfig(String config, String value) throws SQLException {
         final PreparedStatement stmt = conn.prepareStatement("INSERT INTO `configs` (`config`, `value`) VALUES (?, ?)");
         stmt.setString(1, config);
         stmt.setString(2, value);
@@ -48,7 +53,7 @@ public class Database {
         delStmt.close();
     }
 
-    private boolean areTablesExist() {
+    public boolean areTablesExist() {
         try {
             final Statement cur = conn.createStatement();
             cur.execute("SELECT * FROM `mineral_records` LIMIT 0");
@@ -60,17 +65,36 @@ public class Database {
         }
     }
 
-    public void check() throws SQLException {
-        Main.log.info(Lang.TITLE.toString() + "Checking databases...");
+    public void check(boolean log) throws SQLException {
+        if (log) {
+            Main.log.info(Lang.TITLE.toString() + "Checking tables...");
+        }
         if (!areTablesExist()) {
-            Main.log.info(Lang.TITLE.toString() + "Creating databases...");
+            if (log) {
+                Main.log.info(Lang.TITLE.toString() + "Creating tables...");
+            }
             createTables();
+        }
+        if (log) {
             Main.log.info(Lang.TITLE.toString() + "Done.");
         }
     }
 
-    public static Database getInstance() {
-        return Database.instance;
+    public void flushDatabase() throws SQLException {
+        conn.close();
+        final File parent = new File(Main.getInstance().getDataFolder().getAbsolutePath());
+        final File databaseFile = FileTool.getChildFile(parent, Main.getInstance().getName() + ".db", true);
+        databaseFile.delete();
+        conn = DriverManager.getConnection(path);
+        check(false);
     }
-    // private void updateDatabase() {}
+
+    public static HardDiskDatabase getInstance() {
+        return HardDiskDatabase.instance;
+    }
+
+    public Connection getConn() {
+        return conn;
+    }
+
 }

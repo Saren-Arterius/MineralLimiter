@@ -9,7 +9,8 @@ import java.util.logging.Logger;
 
 import net.wtako.MineralLimiter.Commands.CommandMlimit;
 import net.wtako.MineralLimiter.EventHandlers.BlockActionsListener;
-import net.wtako.MineralLimiter.Methods.Database;
+import net.wtako.MineralLimiter.Methods.HardDiskDatabase;
+import net.wtako.MineralLimiter.Methods.MemoryDatabase;
 import net.wtako.MineralLimiter.Utils.Lang;
 
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -27,15 +28,23 @@ public final class Main extends JavaPlugin {
         Main.instance = this;
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
-        getCommand("mlimit").setExecutor(new CommandMlimit());
+        getCommand(getProperty("mainCommand")).setExecutor(new CommandMlimit());
         getServer().getPluginManager().registerEvents(new BlockActionsListener(), this);
         loadLang();
         try {
-            new Database();
-            Database.getInstance().check();
-            Database.getInstance().purgeData();
+            new HardDiskDatabase();
+            new MemoryDatabase();
         } catch (final SQLException e) {
             Main.log.severe("When you see this, that means this plugin is screwed.");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        try {
+            MemoryDatabase.save();
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
     }
@@ -55,8 +64,8 @@ public final class Main extends JavaPlugin {
                 }
             } catch (final IOException e) {
                 e.printStackTrace(); // So they notice
-                Main.log.severe("[MineralLimiter] Couldn't create language file.");
-                Main.log.severe("[MineralLimiter] This is a fatal error. Now disabling");
+                Main.log.severe("[" + Main.getInstance().getName() + "] Couldn't create language file.");
+                Main.log.severe("[" + Main.getInstance().getName() + "] This is a fatal error. Now disabling");
                 setEnabled(false); // Without it loaded, we can't send them
                                    // messages
             }
@@ -73,8 +82,9 @@ public final class Main extends JavaPlugin {
         try {
             conf.save(getLangFile());
         } catch (final IOException e) {
-            Main.log.log(Level.WARNING, "PluginName: Failed to save messages.yml.");
-            Main.log.log(Level.WARNING, "PluginName: Report this stack trace to Saren.");
+            Main.log.log(Level.WARNING, "[" + Main.getInstance().getName() + "] Failed to save messages.yml.");
+            Main.log.log(Level.WARNING, "[" + Main.getInstance().getName() + "] Report this stack trace to "
+                    + getProperty("author") + ".");
             e.printStackTrace();
         }
     }
@@ -95,6 +105,11 @@ public final class Main extends JavaPlugin {
      */
     public File getLangFile() {
         return Main.LANG_FILE;
+    }
+
+    public String getProperty(String key) {
+        final YamlConfiguration spawnConfig = YamlConfiguration.loadConfiguration(getResource("plugin.yml"));
+        return spawnConfig.getString(key);
     }
 
     public static Main getInstance() {

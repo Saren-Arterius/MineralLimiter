@@ -19,6 +19,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class BlockActionsListener implements Listener {
 
@@ -41,11 +42,11 @@ public class BlockActionsListener implements Listener {
         final Player player = event.getPlayer();
 
         if (BlockActionsListener.ReverseAffectedWorlds) {
-            if (BlockActionsListener.AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
+            if (isListContainsStringIgnoreCase(BlockActionsListener.AffectedWorlds, player.getWorld().getName())) {
                 return;
             }
         } else {
-            if (!BlockActionsListener.AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
+            if (!isListContainsStringIgnoreCase(BlockActionsListener.AffectedWorlds, player.getWorld().getName())) {
                 return;
             }
         }
@@ -62,12 +63,31 @@ public class BlockActionsListener implements Listener {
         }
         try {
             final String blockTypeString = event.getBlock().getType().toString();
-            if (BlockActionsListener.AffectedBlockTypes.contains(blockTypeString)
-                    && !(MineralLimiterDatabase.canMineThisBlock(player, blockTypeString))) {
+            if (isListContainsStringIgnoreCase(BlockActionsListener.AffectedBlockTypes, blockTypeString)
+                    && MineralLimiterDatabase.canMineThisBlock(player, blockTypeString)) {
+                // Restricted block, in allowance
+                final BukkitRunnable timer = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            player.sendMessage(Lang.DO_NOT_MINE_IN_THIS_WORLD.toString());
+                            MineralLimiterDatabase.insertRecord(player, blockTypeString,
+                                    (int) (System.currentTimeMillis() / 1000L));
+                        } catch (final SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                timer.runTaskAsynchronously(Main.getInstance());
+            } else if (isListContainsStringIgnoreCase(BlockActionsListener.AffectedBlockTypes, blockTypeString)
+                    && !MineralLimiterDatabase.canMineThisBlock(player, blockTypeString)) {
+                // Restricted block, no more allowance
                 if (BlockActionsListener.CancelEventIfOverLimit) {
+                    player.sendMessage(Lang.DO_NOT_MINE_IN_THIS_WORLD.toString());
                     event.setCancelled(true);
                 } else if (BlockActionsListener.NoDropsIfOverLimit) {
                     event.getBlock().setType(Material.AIR);
+                    event.setExpToDrop(0);
                     player.sendMessage(MessageFormat.format(Lang.THERE_IS_NO_MORE_DROPS.toString(), blockTypeString));
                 }
             }
@@ -79,23 +99,18 @@ public class BlockActionsListener implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        final boolean ReverseAffectedWorlds = Main.getInstance().getConfig()
-                .getBoolean("variable.ReverseAffectedWorlds");
-        final List<String> AffectedWorlds = Main.getInstance().getConfig().getStringList("variable.AffectedWorlds");
-        final List<String> AffectedBlockTypes = Main.getInstance().getConfig()
-                .getStringList("variable.AffectedBlockTypes");
         final Player player = event.getPlayer();
-        if (ReverseAffectedWorlds) {
-            if (AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
+        if (BlockActionsListener.ReverseAffectedWorlds) {
+            if (BlockActionsListener.AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
                 return;
             }
         } else {
-            if (!AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
+            if (!BlockActionsListener.AffectedWorlds.contains(player.getLocation().getWorld().getName())) {
                 return;
             }
         }
         final String blockTypeString = event.getBlock().getType().toString();
-        if (AffectedBlockTypes.contains(blockTypeString)) {
+        if (isListContainsStringIgnoreCase(BlockActionsListener.AffectedBlockTypes, blockTypeString)) {
             player.sendMessage(Lang.DO_NOT_PLACE_ORES.toString());
             BlockActionsListener.playerPlacedOres.add(event.getBlock());
         }
@@ -115,6 +130,15 @@ public class BlockActionsListener implements Listener {
         if (BlockActionsListener.playerPlacedOres.contains(event.getRetractLocation().getBlock())) {
             event.setCancelled(true);
         }
+    }
+
+    public boolean isListContainsStringIgnoreCase(List<String> list, String string) {
+        for (final String elem: list) {
+            if (elem.equalsIgnoreCase(string)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
