@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.coreprotect.CoreProtect;
+import net.coreprotect.CoreProtectAPI;
 import net.wtako.MineralLimiter.Commands.CommandMlimit;
 import net.wtako.MineralLimiter.EventHandlers.BlockActionsListener;
 import net.wtako.MineralLimiter.Methods.HardDiskDatabase;
@@ -14,11 +16,13 @@ import net.wtako.MineralLimiter.Methods.MemoryDatabase;
 import net.wtako.MineralLimiter.Utils.Lang;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
 
     private static Main             instance;
+    public static CoreProtectAPI    coreProtect;
     public static YamlConfiguration LANG;
     public static File              LANG_FILE;
     public static Logger            log = Logger.getLogger("MineralLimiter");
@@ -26,6 +30,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         Main.instance = this;
+        Main.coreProtect = getCoreProtect();
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
         getCommand(getProperty("mainCommand")).setExecutor(new CommandMlimit());
@@ -110,6 +115,28 @@ public final class Main extends JavaPlugin {
     public String getProperty(String key) {
         final YamlConfiguration spawnConfig = YamlConfiguration.loadConfiguration(getResource("plugin.yml"));
         return spawnConfig.getString(key);
+    }
+
+    private CoreProtectAPI getCoreProtect() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("CoreProtect");
+
+        // Check that CoreProtect is loaded
+        if (plugin == null || !(plugin instanceof CoreProtect)) {
+            return null;
+        }
+
+        // Check that the API is enabled
+        CoreProtectAPI CoreProtect = ((CoreProtect) plugin).getAPI();
+        if (CoreProtect.isEnabled() == false) {
+            return null;
+        }
+
+        // Check that a compatible version of the API is loaded
+        if (CoreProtect.APIVersion() < 2) {
+            return null;
+        }
+
+        return CoreProtect;
     }
 
     public static Main getInstance() {

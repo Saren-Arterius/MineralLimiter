@@ -61,6 +61,9 @@ public class BlockActionsListener implements Listener {
             BlockActionsListener.playerPlacedOres.remove(event.getBlock());
             return;
         }
+        if (Main.coreProtect != null && Main.coreProtect.blockLookup(event.getBlock(), Integer.MAX_VALUE).size() > 0) {
+            return;
+        }
         try {
             final String blockTypeString = event.getBlock().getType().toString();
             // Restricted block
