@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
@@ -37,9 +38,13 @@ public class BlockActionsListener implements Listener {
     private static boolean          IgnoreCreative         = Main.getInstance().getConfig()
                                                                    .getBoolean("variable.IgnoreCreative");
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
         final Player player = event.getPlayer();
+
+        if (event.isCancelled()) {
+            return;
+        }
 
         if (BlockActionsListener.ReverseAffectedWorlds) {
             if (isListContainsStringIgnoreCase(BlockActionsListener.AffectedWorlds, player.getWorld().getName())) {

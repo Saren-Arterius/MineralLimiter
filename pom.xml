@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.wtako</groupId>
 	<artifactId>MineralLimiter</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2a</version>
 	<name>MineralLimiter</name>
 	<description>Prevents players from mining too much minerals in specific worlds.</description>
 	<url>https://github.com/Saren-Arterius/MineralLimiter</url>
